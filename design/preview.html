@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrediScout — Design System Preview</title>
+<style>
+  :root{
+    --bg:#F4F6FA; --surface:#FFFFFF; --surface-2:#EEF2F7; --border:#E2E8F0;
+    --ink:#0F1E33; --body:#33475F; --muted:#64748B;
+    --primary:#0B3D91; --primary-hover:#082C75; --primary-soft:#E4ECFB;
+    --gold:#E9B44C; --gold-ink:#7A5410;
+    --success:#15803D; --success-bg:#DCFCE7;
+    --warning:#B45309; --warning-bg:#FEF3C7;
+    --danger:#B91C1C; --danger-bg:#FEE2E2;
+    --info:#1D4ED8; --info-bg:#DBEAFE;
+    --radius:12px; --radius-sm:8px;
+    --shadow:0 1px 2px rgba(15,30,51,.06),0 4px 16px rgba(15,30,51,.06);
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font);background:var(--bg);color:var(--body);line-height:1.55}
+  .num{font-variant-numeric:tabular-nums}
+  /* top bar */
+  .topbar{background:var(--ink);color:#fff;padding:14px 28px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:10}
+  .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--primary),#3B82F6);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff}
+  .brand{font-weight:700;font-size:18px;color:#fff;letter-spacing:.2px}
+  .brand small{font-weight:400;color:#9FB3D1;font-size:12px;display:block;letter-spacing:.4px}
+  .topbar nav{margin-left:auto;display:flex;gap:4px}
+  .topbar nav a{color:#C6D4E8;text-decoration:none;font-size:13.5px;padding:7px 12px;border-radius:8px}
+  .topbar nav a.active,.topbar nav a:hover{background:rgba(255,255,255,.12);color:#fff}
+  .wrap{max-width:1120px;margin:0 auto;padding:32px 24px 80px}
+  h1{color:var(--ink);font-size:30px;letter-spacing:-.4px;margin-bottom:6px}
+  .lede{color:var(--muted);margin-bottom:28px;font-size:15px}
+  section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px;margin-bottom:24px}
+  section>h2{color:var(--ink);font-size:18px;margin-bottom:4px}
+  section>p.sub{color:var(--muted);font-size:13.5px;margin-bottom:18px}
+  /* swatches */
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .sw{border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+  .sw .c{height:64px}
+  .sw .l{padding:8px 10px;font-size:12px}
+  .sw .l b{display:block;color:var(--ink);font-size:12.5px}
+  .sw .l code{font-family:var(--mono);color:var(--muted);font-size:11.5px}
+  /* type */
+  .type-row{padding:10px 0;border-bottom:1px dashed var(--border)}
+  .type-row:last-child{border-bottom:0}
+  /* buttons */
+  .btn{display:inline-block;border:0;cursor:pointer;font-family:var(--font);font-weight:600;font-size:14px;padding:10px 18px;border-radius:9px;margin:0 8px 8px 0}
+  .btn-primary{background:var(--primary);color:#fff}
+  .btn-primary:hover{background:var(--primary-hover)}
+  .btn-secondary{background:var(--surface-2);color:var(--ink);border:1px solid var(--border)}
+  .btn-success{background:var(--success);color:#fff}
+  .btn-danger-ghost{background:transparent;color:var(--danger);border:1px solid var(--danger)}
+  .badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;margin:0 6px 6px 0}
+  .b-green{background:var(--success-bg);color:var(--success)}
+  .b-amber{background:var(--warning-bg);color:var(--warning)}
+  .b-red{background:var(--danger-bg);color:var(--danger)}
+  .b-blue{background:var(--info-bg);color:var(--info)}
+  .b-navy{background:var(--primary-soft);color:var(--primary)}
+  .rate{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#fff;font-weight:700;font-size:13.5px;padding:8px 14px;border-radius:999px;margin:0 6px 6px 0}
+  .rate .pct{color:var(--gold)}
+  .rate small{font-weight:400;color:#9FB3D1}
+  .field{margin:0 12px 12px 0;display:inline-block}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--ink);margin-bottom:5px}
+  .field input,.field select{font-family:var(--font);font-size:14px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--ink);min-width:210px}
+  .field input:focus,.field select:focus{outline:2px solid var(--primary);outline-offset:1px}
+  /* stepper */
+  .stepper{display:flex;flex-wrap:wrap;gap:8px}
+  .step{flex:1 1 120px;min-width:120px;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:9px 10px;font-size:12px}
+  .step b{display:block;color:var(--ink);font-size:12.5px}
+  .step.done{border-left:4px solid var(--success)}
+  .step.active{border-left:4px solid var(--primary);background:var(--primary-soft)}
+  .step.attn{border-left:4px solid var(--warning);background:#FFFBEB}
+  .step .st{font-size:11px;color:var(--muted)}
+  /* metric card */
+  .metric{border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;background:#fff;margin-bottom:12px}
+  .metric .t{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+  .metric .v{font-size:30px;font-weight:800;color:var(--ink);margin:4px 0}
+  .metric .m{font-size:14px}
+  .metric .i{font-size:13px;color:var(--muted);background:var(--surface-2);border-radius:8px;padding:8px 12px;margin-top:10px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:700px){.grid2{grid-template-columns:1fr}}
+  /* risk row */
+  .risk{border:1px solid var(--border);border-left:5px solid var(--warning);border-radius:9px;padding:14px 16px;margin-bottom:10px;background:#FFFEFB}
+  .risk.high{border-left-color:var(--danger);background:#FFF9F9}
+  .risk.low{border-left-color:var(--success);background:#F9FEFB}
+  .risk b.r{color:var(--ink)}
+  .risk .why{font-size:13.5px;margin:4px 0}
+  .risk .mit{font-size:13px;color:var(--success)}
+  /* recommendation */
+  .rec{background:var(--ink);color:#E7EEF9;border-radius:var(--radius);padding:26px;box-shadow:var(--shadow)}
+  .rec .dec{display:inline-block;background:var(--gold);color:#231A03;font-weight:800;font-size:13px;letter-spacing:.8px;padding:5px 14px;border-radius:999px;margin-bottom:12px}
+  .rec h3{color:#fff;font-size:22px;margin-bottom:12px}
+  .rec dl{display:grid;grid-template-columns:200px 1fr;gap:6px 14px;font-size:14px}
+  .rec dt{color:#9FB3D1}
+  .rec dd{color:#fff;font-weight:600}
+  .rec .reasons{margin-top:14px;font-size:13.5px}
+  .rec .reasons b{color:var(--gold)}
+  /* table */
+  table.sched{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff}
+  table.sched th{background:var(--surface-2);color:var(--ink);text-align:right;padding:9px 12px;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+  table.sched th:first-child,table.sched td:first-child{text-align:left}
+  table.sched td{border-top:1px solid var(--border);padding:9px 12px;text-align:right}
+  table.sched tr.total td{background:var(--primary-soft);font-weight:700;color:var(--ink)}
+  /* alert */
+  .alert{border:1px solid #F5D48B;background:#FFFBEB;border-radius:9px;padding:14px 16px;font-size:13.5px}
+  .alert b{color:var(--warning)}
+  footer{color:var(--muted);font-size:12.5px;text-align:center;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">◈</div>
+  <div class="brand">CrediScout<small>CREDIT ANALYSIS &amp; LENDING DECISIONS</small></div>
+  <nav><a href="#" class="active">Assessments</a><a href="#">Borrowers</a><a href="#">Documents</a><a href="#">Admin</a></nav>
+</div>
+
+<div class="wrap">
+  <h1>Design System Preview</h1>
+  <p class="lede">Look-and-feel for the CrediScout analyst workflow — same tokens, components and patterns the app will be built with (Tailwind + shadcn/ui in code).</p>
+
+  <section>
+    <h2>1 · Colors</h2>
+    <p class="sub">Trust navy leads; gold reserved for the recommendation moment; semantic colors only for status and risk.</p>
+    <div class="swatches">
+      <div class="sw"><div class="c" style="background:#0F1E33"></div><div class="l"><b>Ink / headings</b><code>#0F1E33</code></div></div>
+      <div class="sw"><div class="c" style="background:#0B3D91"></div><div class="l"><b>Primary navy</b><code>#0B3D91</code></div></div>
+      <div class="sw"><div class="c" style="background:#E4ECFB"></div><div class="l"><b>Primary soft</b><code>#E4ECFB</code></div></div>
+      <div class="sw"><div class="c" style="background:#E9B44C"></div><div class="l"><b>Decision gold</b><code>#E9B44C</code></div></div>
+      <div class="sw"><div class="c" style="background:#15803D"></div><div class="l"><b>Success</b><code>#15803D</code></div></div>
+      <div class="sw"><div class="c" style="background:#DCFCE7"></div><div class="l"><b>Success bg</b><code>#DCFCE7</code></div></div>
+      <div class="sw"><div class="c" style="background:#B45309"></div><div class="l"><b>Warning</b><code>#B45309</code></div></div>
+      <div class="sw"><div class="c" style="background:#FEF3C7"></div><div class="l"><b>Warning bg</b><code>#FEF3C7</code></div></div>
+      <div class="sw"><div class="c" style="background:#B91C1C"></div><div class="l"><b>Danger</b><code>#B91C1C</code></div></div>
+      <div class="sw"><div class="c" style="background:#FEE2E2"></div><div class="l"><b>Danger bg</b><code>#FEE2E2</code></div></div>
+      <div class="sw"><div class="c" style="background:#64748B"></div><div class="l"><b>Muted text</b><code>#64748B</code></div></div>
+      <div class="sw"><div class="c" style="background:#F4F6FA;border-bottom:1px solid #E2E8F0"></div><div class="l"><b>App background</b><code>#F4F6FA</code></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>2 · Typography &amp; Money</h2>
+    <p class="sub">System font stack; tabular numerals for every naira amount so columns align.</p>
+    <div class="type-row" style="font-size:28px;font-weight:800;color:var(--ink)">Recommendation headline — 28px / 800</div>
+    <div class="type-row" style="font-size:18px;font-weight:700;color:var(--ink)">Stage title — 18px / 700</div>
+    <div class="type-row" style="font-size:14px">Body text — 14px, used for analyst notes and explanations.</div>
+    <div class="type-row num" style="font-size:14px;color:var(--ink)">₦5,000,000 · ₦3,200,000 · ₦412,860 <span style="color:var(--muted)">— tabular figures</span></div>
+  </section>
+
+  <section>
+    <h2>3 · Buttons, Badges, Rate Pills &amp; Inputs</h2>
+    <p class="sub">Core controls used across all 11 stages.</p>
+    <div>
+      <button class="btn btn-primary">Approve recommendation</button>
+      <button class="btn btn-secondary">Save draft</button>
+      <button class="btn btn-success">Verify document</button>
+      <button class="btn btn-danger-ghost">Decline</button>
+    </div>
+    <div>
+      <span class="badge b-green">APPROVE</span><span class="badge b-amber">REDUCED AMOUNT</span><span class="badge b-red">DECLINE</span><span class="badge b-blue">REFERRED</span><span class="badge b-navy">RETURNING CLIENT</span>
+    </div>
+    <div>
+      <span class="rate"><span class="pct">4.60% RB</span> / month <small>· Returning · SBL ₦5–9.9m</small></span>
+      <span class="rate"><span class="pct">3.00% Flat</span> / month <small>· Clean Energy · all amounts</small></span>
+    </div>
+    <div style="margin-top:8px">
+      <span class="field"><label>Requested amount (₦)</label><input value="5,000,000"></span>
+      <span class="field"><label>Loan product</label><select><option>Small Business Loan (SBL)</option><option>SME Loan</option><option>Agricultural Loan</option></select></span>
+      <span class="field"><label>Client status</label><select><option>Returning — verified</option><option>New</option></select></span>
+    </div>
+  </section>
+
+  <section>
+    <h2>4 · Assessment Stepper (11 stages)</h2>
+    <p class="sub">Persistent progress rail; amber flags stages needing analyst attention.</p>
+    <div class="stepper">
+      <div class="step done"><b>1 · Intake</b><span class="st">✓ complete</span></div>
+      <div class="step done"><b>2 · Profile</b><span class="st">✓ complete</span></div>
+      <div class="step done"><b>3 · Documents</b><span class="st">✓ 4/5 verified</span></div>
+      <div class="step done"><b>4 · Financials</b><span class="st">✓ complete</span></div>
+      <div class="step active"><b>5 · Credit &amp; Risk</b><span class="st">● in progress</span></div>
+      <div class="step"><b>6 · Business</b><span class="st">not started</span></div>
+      <div class="step"><b>7 · Collateral</b><span class="st">not started</span></div>
+      <div class="step"><b>8 · Product</b><span class="st">not started</span></div>
+      <div class="step attn"><b>9 · Risk summary</b><span class="st">⚠ 2 flags</span></div>
+      <div class="step"><b>10 · Amount</b><span class="st">not started</span></div>
+      <div class="step"><b>11 · Decision</b><span class="st">not started</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>5 · Metric Cards (Metric → Value → Meaning → Interpretation)</h2>
+    <p class="sub">No unexplained numbers — every metric carries its meaning, per PRD §19.</p>
+    <div class="grid2">
+      <div class="metric">
+        <div class="t">Debt Service Coverage Ratio</div>
+        <div class="v num">1.45×</div>
+        <div class="m"><b>What it measures:</b> whether assessed cash flow covers debt-service obligations.</div>
+        <div class="i"><b>Interpretation:</b> assessed cash flow is 1.45× the debt-service requirement — above the 1.20× policy minimum. Adequate cover.</div>
+      </div>
+      <div class="metric">
+        <div class="t">Loan-to-Value (collateral)</div>
+        <div class="v num">68%</div>
+        <div class="m"><b>What it measures:</b> proposed exposure relative to verified security value.</div>
+        <div class="i"><b>Interpretation:</b> below the 75% policy cap for SBL. Collateral supports — but does not override — repayment capacity.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>6 · Risk Rows (Risk → Why it matters → Mitigation)</h2>
+    <p class="sub">Warnings always explain themselves, per PRD §9.</p>
+    <div class="risk high">
+      <b class="r">⚠ High existing debt exposure <span class="badge b-red">HIGH</span></b>
+      <div class="why"><b>Why it matters:</b> existing obligations consume 41% of verified cash flow, leaving thin buffer for the new facility.</div>
+      <div class="mit">✓ <b>Mitigation:</b> supportable amount haircut applied (₦5.0m → ₦3.2m); condition: settle Facility B before disbursement.</div>
+    </div>
+    <div class="risk">
+      <b class="r">⚠ Revenue concentration — 1 buyer ≈ 55% of sales <span class="badge b-amber">MEDIUM</span></b>
+      <div class="why"><b>Why it matters:</b> loss of the anchor buyer would cut cash flow below the DSCR floor within one quarter.</div>
+      <div class="mit">✓ <b>Mitigation:</b> 24-month supply contract verified; covenant: report buyer-share quarterly.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>7 · Final Recommendation Panel</h2>
+    <p class="sub">The explicit decision moment — amount, tenor, rate and schedule in one place.</p>
+    <div class="rec">
+      <span class="dec">RECOMMENDATION · APPROVE AT REDUCED AMOUNT</span>
+      <h3 class="num">₦3,200,000 · 12 months · 4.60% RB / month</h3>
+      <dl class="num">
+        <dt>Requested</dt><dd>₦5,000,000</dd>
+        <dt>Monthly instalment</dt><dd>₦357,440</dd>
+        <dt>Total interest</dt><dd>₦1,089,280</dd>
+        <dt>Rate basis</dt><dd>Returning client · SBL tier ₦5–9.9m</dd>
+      </dl>
+      <p class="reasons"><b>Basis:</b> assessed repayment capacity supports a lower exposure than requested. Existing obligations and cash-flow variability limit the supportable facility.<br><b>Conditions:</b> satisfactory verification of financials and security documentation.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>8 · Repayment Schedule (preview)</h2>
+    <p class="sub">Reducing-balance amortisation shown with principal/interest split and effective annual rate.</p>
+    <table class="sched num">
+      <tr><th>Period</th><th>Opening</th><th>Instalment</th><th>Principal</th><th>Interest</th><th>Closing</th></tr>
+      <tr><td>1</td><td>₦3,200,000</td><td>₦357,440</td><td>₦210,240</td><td>₦147,200</td><td>₦2,989,760</td></tr>
+      <tr><td>2</td><td>₦2,989,760</td><td>₦357,440</td><td>₦219,911</td><td>₦137,529</td><td>₦2,769,849</td></tr>
+      <tr><td>3</td><td>₦2,769,849</td><td>₦357,440</td><td>₦230,027</td><td>₦127,413</td><td>₦2,539,822</td></tr>
+      <tr><td>…</td><td>…</td><td>…</td><td>…</td><td>…</td><td>…</td></tr>
+      <tr class="total"><td>Total (12 mo)</td><td>—</td><td>₦4,289,280</td><td>₦3,200,000</td><td>₦1,089,280</td><td>₦0</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>9 · Alert Banner</h2>
+    <p class="sub">Issues explain why they matter and link to the fixing stage.</p>
+    <div class="alert"><b>⚠ Client status unverified.</b> Rate resolution needs a verified New/Returning flag — confirm prior-facility history in <b>Stage 2 → Profile</b> before the recommendation can price this facility.</div>
+  </section>
+
+  <footer>CrediScout design preview · tokens map 1:1 to Tailwind theme in the build · light mode shown (dark tokens defined at build time)</footer>
+</div>
+</body>
+</html>

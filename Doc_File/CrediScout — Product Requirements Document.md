@@ -109,7 +109,7 @@ It should clearly state a recommendation such as:
 > **RECOMMENDATION: APPROVE**  
 > Recommended Amount: ₦3,000,000  
 > Recommended Tenor: 12 months  
-> **Applicable Lending Rate: 4.60% RB per month** (Returning Client, SBL/SME)  
+> **Applicable Lending Rate: 5.00% RB per month** (Returning Client, SBL/SME tier ≤ ₦5m)  
 > Key Reasons: Adequate repayment capacity, acceptable existing debt exposure and satisfactory business cash flow.  
 > Key Conditions: Subject to satisfactory verification of specified documents.
 
@@ -570,7 +570,7 @@ Requirements that should be satisfied before or during approval where applicable
 > Requested Amount: ₦5,000,000  
 > Recommended Amount: ₦3,200,000  
 > Recommended Tenor: 12 months  
-> **Applicable Lending Rate: 4.60% RB per month** (Returning Client, SBL/SME tier ₦3m–₦9.9m)
+> **Applicable Lending Rate: 5.00% RB per month** (Returning Client, SBL/SME tier ≤ ₦5m)
 
 > **Basis:** Assessed repayment capacity supports a lower exposure than requested. Existing obligations and cash-flow variability limit the supportable facility.
 

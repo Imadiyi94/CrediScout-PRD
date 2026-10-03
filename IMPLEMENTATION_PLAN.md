@@ -35,10 +35,10 @@ This plan translates the PRD into buildable phases: design system → architectu
 | Auth | **Better Auth** (email/password + sessions, Prisma adapter) | First-class RBAC-friendly sessions, org-agnostic 2-role model, self-hostable; no external IdP needed for MVP |
 | Validation | **Zod** (shared server/client schemas) | Single source of truth for forms + API |
 | Money | **Integer kobo** in DB + `decimal.js` in engine | Avoids float errors on ₦ amounts and interest |
-| File storage | **Cloudflare R2 (S3-compatible API)** | Prod/staging bucket on R2; **local dev uses MinIO** (S3-compatible R2 stand-in) so code paths are identical — only endpoint/keys change at cloud migration |
+| File storage | **Cloudflare R2 (S3-compatible API)** | Prod/staging bucket on R2; **local dev uses Adobe S3Mock** (S3-compatible R2 stand-in) so code paths are identical — only endpoint/keys change at cloud migration |
 | Calculation core | **Pure-TS package `packages/credit-engine/`** | Deterministic, unit-testable, auditable; no framework imports |
 | PDF/export | Server-rendered summary → PDF (e.g. `@react-pdf/renderer` or headless print CSS) | Stakeholder/executive summary must be shareable |
-| Infra (local now, cloud later) | **Docker Compose on your machine:** `web`, `postgres:16`, `minio` (R2 stand-in) | Everything runs locally for now; cloud migration = same containers + R2 bucket + managed Postgres 16 — no code changes to storage or DB layers |
+| Infra (local now, cloud later) | **Docker Compose on your machine:** `web`, `postgres:16`, `S3Mock` (R2 stand-in) | Everything runs locally for now; cloud migration = same containers + R2 bucket + managed Postgres 16 — no code changes to storage or DB layers |
 | CI/CD | **GitHub Actions:** lint → typecheck → unit tests → build → migrate check | Repo already on GitHub; branch protection on `master`/`main` |
 
 ### 0.2 Architecture shape (modular monolith)
@@ -66,7 +66,7 @@ This plan translates the PRD into buildable phases: design system → architectu
 
 1. Rename default branch if desired (`master` → `main`) and set GitHub branch protection.
 2. Scaffold Next.js + TS + Tailwind + shadcn/ui + Prisma + **Better Auth** skeleton.
-3. Add Docker Compose (`web`, `postgres:16`, `minio` as R2 stand-in), `.env.example`, health-check route.
+3. Add Docker Compose (`web`, `postgres:16`, `S3Mock` as R2 stand-in), `.env.example`, health-check route.
 4. Add GitHub Actions workflow (install → lint → typecheck → `vitest` → build).
 5. Seed script stubs (rate tables in §17, roles, one demo analyst + admin).
 6. **Acceptance:** `docker compose up` → app loads, login works, `prisma migrate dev` clean, CI green.
@@ -253,7 +253,7 @@ Maps to PRD §6–§7.
 
 1. **Testing:** engine unit tests (target ≥90%), API integration tests (rate resolution, override flow, immutability), Playwright E2E (one happy-path per product + one decline + one override), accessibility pass (keyboard, contrast, focus order on stepper).
 2. **Security:** RBAC tests, rate-table tamper tests (analyst cannot write), file-type/size limits, virus-scan hook point, PII minimisation, session expiry.
-3. **Data:** backup/restore runbook for local Postgres 16; **MinIO→R2 cutover notes** (same S3-compatible calls — swap endpoint + `R2_ACCOUNT_ID`/`R2_ACCESS_KEY_ID`/`R2_SECRET_ACCESS_KEY` + bucket name; verify presigned-URL flow); seed versioning.
+3. **Data:** backup/restore runbook for local Postgres 16; **S3Mock→R2 cutover notes** (same S3-compatible calls — swap endpoint + `R2_ACCOUNT_ID`/`R2_ACCESS_KEY_ID`/`R2_SECRET_ACCESS_KEY` + bucket name; verify presigned-URL flow); seed versioning.
 4. **Deploy:** `Dockerfile` (multi-stage) + `compose.prod.yml`; GitHub Actions build/push image; staging → prod promotion checklist.
 5. **Docs:** analyst user guide (11 stages with screenshots), admin guide (rates/thresholds/effective dating), engine math appendix (RB vs Flat formulas + EAR), ADRs (stack, Better Auth, R2-behind-S3-compatible-client, kobo-money, effective-dated rates, no-auto-accept docs).
 6. **Acceptance & success mapping (§23):** demo script proving all 8 success criteria, esp. #6 (explicit recommendation with rate/tenor/schedule) and #7 (correct automatic pricing).
@@ -275,14 +275,14 @@ P2 Data/Auth/Admin ├─→ P3 Intake/Profile/Docs ─→ P4 Financial engine �
 ## Appendix B — Key Decisions Log (to confirm)
 
 1. Six products (not five) — fix PRD wording.
-2. SBL/SME band boundaries: lower-inclusive/upper-exclusive.
+2. SBL/SME band boundaries (locks PRD §17 labels): first band (min 0) is **max-inclusive** ("≤ ₦5,000,000", so exactly ₦5m → 5.00%); all other bands are **min-inclusive / max-exclusive**, so exact higher boundaries fall in the **higher** band (₦10m → 4.60% tier, ₦50m → top tier). Top band is open-ended (≥ ₦50m).
 3. Returning-client evidence requirements (§17 rule adopted).
 4. Asset-loan rate: blocked until Admin configures (no silent default).
 5. Assisted extraction: MVP = upload + manual entry + verification; OCR/AI deferred (PRD allows "where appropriate").
 6. Branch: keep `master` or rename to `main` (recommend `main` to match GitHub default).
 7. Auth: **Better Auth** (self-hosted sessions, Prisma adapter) — no external IdP in MVP.
-8. Storage: **Cloudflare R2** via S3-compatible client; **MinIO locally** as the R2 stand-in so local and cloud share one code path.
-9. Hosting: **local Docker Compose first** (web + PG16 + MinIO on your machine); cloud later with managed Postgres 16 + R2 — no storage/DB rewrites.
+8. Storage: **Cloudflare R2** via S3-compatible client; **S3Mock locally** as the R2 stand-in so local and cloud share one code path.
+9. Hosting: **local Docker Compose first** (web + PG16 + S3Mock on your machine); cloud later with managed Postgres 16 + R2 — no storage/DB rewrites.
 
 ## Appendix C — Risks & Mitigations
 

@@ -17,9 +17,9 @@ This plan translates the PRD into buildable phases: design system → architectu
   6. Asset Loans (AL) — Admin-configurable rate
 - **11-stage workflow:** Create assessment → Borrower & Loan Profile → Info/Docs → Financial capacity → Credit/risk → Borrower/business → Collateral → Product-specific → Risk summary → Recommended amount → Final recommendation (amount + tenor + rate + schedule + reasons/risks/mitigations/conditions), plus override, stakeholder views, assessment summary.
 - **Pricing rule:** the **recommended amount** (not requested) + verified **client status** + **product** determine the rate. Rate override requires justification + Admin approval, audit-logged.
-- **MVP excludes:** disbursement, collections, servicing, customer-facing applications, portfolio management, core banking, complex workflow admin.
+- **MVP excludes:** collections, servicing, customer-facing applications, portfolio management, core banking, complex workflow administration. (Disbursement was originally deferred but is now in scope — see §22 and Phase 7.5.)
 
-> ⚠️ **PRD inconsistency to resolve before build (decision required):** §22 MVP says "Five loan-product categories" but §1/§12 now list **six** (SBL, SME, Agro, Clean Energy, Housing/Education, Asset). **Recommendation:** build six; fix the "five" wording in the PRD.
+> ✅ **Resolved:** §22 MVP now says "Six loan-product categories" and includes disbursement; six products built.
 
 ---
 
@@ -228,6 +228,12 @@ Maps to PRD §6–§7.
 - §17.4 schedule preview embedded (instalment, P&I split, total interest, EAR).
 - **Override (§16):** analyst may change decision/amount/tenor (reason mandatory); **rate** change creates pending-approval state for Admin. System vs Analyst recommendation shown side-by-side with reason.
 - **Acceptance:** worked example — Requested ₦5m → Recommended ₦3.2m, 12 mo, Returning SBL 4.60% RB — reproduces instalment/total-interest figures from engine tests; override without reason is rejected; rate override without Admin stays pending.
+
+### 7.5 Disbursement (Paystack transfers + webhook)
+
+- Handles and disburses approved loans to borrower bank accounts and confirms payment status via APIs/webhooks.
+- Admin-only send; APPROVE / REDUCED only (recommended amount, kobo); no double-pay; account verified before recipient creation; unique reference per attempt; signed webhook flips PENDING → SUCCESS / FAILED / REVERSED with audit.
+- **Acceptance:** analyst blocked (403), unapproved blocked (422), signed webhook updates status, forged webhook rejected (401).
 
 ---
 

@@ -786,7 +786,7 @@ The first version should focus on the **core credit-analysis journey**, rather t
 ### **MVP should include:**
 
 * Borrower & Loan Profile  
-* Five loan-product categories  
+* Six loan-product categories  
 * Manual information entry  
 * Document submission  
 * Information verification  
@@ -802,13 +802,13 @@ The first version should focus on the **core credit-analysis journey**, rather t
 * Explicit lending recommendation (with rate, tenor, repayment schedule preview)  
 * Analyst override (decision, amount, tenor, **rate — with justification**)  
 * Reasons/conditions  
-* Credit assessment summary
+* Credit assessment summary  
+* **Loan disbursement — handles and disburses approved loans to borrower bank accounts and confirms payment status via APIs/webhooks**
 
 ### **Defer initially**
 
 Features such as:
 
-* Loan disbursement  
 * Collections management  
 * Full loan servicing  
 * Customer-facing loan applications  
@@ -852,7 +852,7 @@ A stakeholder can understand the principal evidence and reasoning behind the rec
 
 # **24\. Core Product Proposition**
 
-> **CrediScout helps credit analysts turn borrower information into structured financial and risk analysis, identify key credit risks, determine a supportable loan amount, apply the correct lending rate, and produce an explicit, evidence-based lending recommendation with a full repayment schedule.**
+> **CrediScout helps credit analysts turn borrower information into structured financial and risk analysis, identify key credit risks, determine a supportable loan amount, apply the correct lending rate, produce an explicit, evidence-based lending recommendation with a full repayment schedule — and disburse approved loans to borrower bank accounts, confirming payment status via APIs/webhooks.**
 
 ### **Product philosophy**
 
@@ -863,5 +863,6 @@ A stakeholder can understand the principal evidence and reasoning behind the rec
 **Understand the risk.**  
 **Determine the supportable exposure.**  
 **Price it correctly.**  
-**Explain the decision.**
+**Explain the decision.**  
+**Disburse what you approve.**
 

@@ -35,11 +35,19 @@ This plan translates the PRD into buildable phases: design system → architectu
 | Auth | **Better Auth** (email/password + sessions, Prisma adapter) | First-class RBAC-friendly sessions, org-agnostic 2-role model, self-hostable; no external IdP needed for MVP |
 | Validation | **Zod** (shared server/client schemas) | Single source of truth for forms + API |
 | Money | **Integer kobo** in DB + `decimal.js` in engine | Avoids float errors on ₦ amounts and interest |
-| File storage | **Cloudflare R2 (S3-compatible API)** | Prod/staging bucket on R2; **local dev uses Adobe S3Mock** (S3-compatible R2 stand-in) so code paths are identical — only endpoint/keys change at cloud migration |
+| File storage | **Cloudflare R2 (S3-compatible API)** | Prod/staging bucket `crediscout-documents` on R2; **local dev uses Adobe S3Mock** (S3-compatible R2 stand-in) so code paths are identical — only endpoint/keys change at cloud migration. **Use ONLY R2 API Token (R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_ACCOUNT_ID, R2_BUCKET_NAME). NEVER use Cloudflare Account API Token. R2 token is bucket-scoped and safe.** (MinIO was requested for local dev but is uninstallable — Docker Hub repo removed, no binary published.) |
+| AI reasoning | **Groq** (`openai/gpt-oss-120b`; `llama-3.3-70b-versatile` was decommissioned) | Document extraction, risk narratives, grounded assessment Q&A. Key in `.env` only. |
+| Disbursement | **Paystack** transfers + signed webhooks | Admin-only pays of APPROVE/REDUCED amounts in kobo; test keys first, live locked behind explicit go-live. |
+| Identity (NIN/BVN/face) | **Dojah** (NIMC/NIBSS sources), sandbox default | Stage 2 NIN/BVN/face verification + Stage 3 gate. Sandbox host differs from production; live locked behind `DOJAH_ALLOW_LIVE`. |
+| Credit bureaus | **FirstCentral + CRC**, MOCK mode (deterministic mock engine) | Stage 5 scores + average via internal self-call (works on Netlify without whitelisting); LIVE only from allow-listed host with real keys. |
+| Email | **Resend** now, **Amazon SES** at go-live | OTP login, admin rate-override alerts. Free tier delivers to own signup email only until a domain is verified. |
+| SMS | **Termii** (Sendchamp evaluated, dropped) | Borrower decision SMS; test-number allow-list guard until go-live. |
 | Calculation core | **Pure-TS package `packages/credit-engine/`** | Deterministic, unit-testable, auditable; no framework imports |
 | PDF/export | Server-rendered summary → PDF (e.g. `@react-pdf/renderer` or headless print CSS) | Stakeholder/executive summary must be shareable |
 | Infra (local now, cloud later) | **Docker Compose on your machine:** `web`, `postgres:16`, `S3Mock` (R2 stand-in) | Everything runs locally for now; cloud migration = same containers + R2 bucket + managed Postgres 16 — no code changes to storage or DB layers |
 | CI/CD | **GitHub Actions:** lint → typecheck → unit tests → build → migrate check | Repo already on GitHub; branch protection on `master`/`main` |
+
+> **Key handling (all external services):** All API keys are shared securely via guidance from OpenCode, never pasted in chat. The user is told exactly how to share keys for each feature: local keys go only in the gitignored `.env`, production keys only in the Netlify Environment Variables dashboard. For R2, only bucket-scoped keys are used.
 
 ### 0.2 Architecture shape (modular monolith)
 

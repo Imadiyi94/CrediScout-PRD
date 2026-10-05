@@ -805,6 +805,10 @@ The first version should focus on the **core credit-analysis journey**, rather t
 * Credit assessment summary  
 * **Loan disbursement — handles and disburses approved loans to borrower bank accounts and confirms payment status via APIs/webhooks**
 
+### **Mock / test modes**
+
+All external services run in mock or test modes so the product builds and tests on a laptop without paying: bureau checks use deterministic MOCK scores, storage uses a local S3-compatible stand-in, Paystack and Dojah use sandbox/test keys, email uses Resend's free tier, and SMS is restricted to a test number. Live keys, wallets, domains and allow-listing switch on explicitly at go-live (see §24).
+
 ### **Defer initially**
 
 Features such as:
@@ -850,7 +854,69 @@ A stakeholder can understand the principal evidence and reasoning behind the rec
 
 ---
 
-# **24\. Core Product Proposition**
+# **24\. External Integrations**
+
+CrediScout connects to external services for disbursement, identity, bureaus, storage, email and SMS. Every integration ships in a free/sandbox mode first so the full workflow builds and tests on a laptop without paying; live keys and billing are switched on explicitly at go-live.
+
+## **24.1 Paystack (disbursement)**
+
+* **Does:** sends approved loan amounts to borrower bank accounts (kobo-exact transfers) and confirms success/failure via signed webhooks.
+* **Stage:** Stage 11 — admin-only **Disburse Loan** on APPROVE / REDUCED; no double-pay; account verified before money moves.
+* **Test locally:** `sk_test_…` key; transfers simulated, webhooks simulated with valid HMAC.
+* **Live:** `sk_live_…` key behind an explicit go-live step, plus a public webhook URL.
+
+## **24.2 Dojah — NIN / BVN / face (NIMC & NIBSS sources)**
+
+* **Does:** checks that the borrower's NIN and BVN are real and that their face matches their photo ID.
+* **Stage:** Stage 2 — NIN, BVN and Face cards with Verify buttons and green/red badges; Stage 3 stays locked until NIN **and** BVN verify.
+* **Test locally:** sandbox host with free test numbers (NIN `70123456789`, BVN `22222222222`).
+* **Live:** production host with live keys, wallet funded, behind `DOJAH_ALLOW_LIVE`.
+
+## **24.3 FirstCentral + CRC (credit bureaus)**
+
+* **Does:** brings the borrower's bureau scores automatically into Stage 5 (FirstCentral score, CRC score, average).
+* **Stage:** Stage 5 — three score cards plus provider names and a MOCK MODE badge.
+* **Test locally and on Netlify:** MOCK mode — deterministic per-BVN fake scores via an internal self-call, so no whitelisting is needed anywhere.
+* **Live:** real bureau APIs from an allow-listed host only (bureaus require certificate/IP whitelisting since Netlify IPs rotate).
+
+## **24.4 File storage (MinIO local / Cloudflare R2 live)**
+
+* **Does:** saves CAC documents, collateral photos, bank statements and every supporting file.
+* **Stage:** Stage 3 — progress uploader; each file records its backend and bucket.
+* **Test locally:** S3-compatible stand-in in Docker (MinIO was requested but is uninstallable — registry removed — so Adobe S3Mock fills the role free).
+* **Live:** Cloudflare R2 bucket `crediscout-documents` (10 GB free tier) using **only** the bucket-scoped R2 API token (`R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ACCOUNT_ID`, `R2_BUCKET_NAME`) — never the Cloudflare Account API Token.
+
+## **24.5 Resend / SES (email) and Termii (SMS)**
+
+* **Does:** email sends login OTPs and admin rate-override alerts (Resend now, Amazon SES at go-live); SMS notifies borrowers of APPROVE / DECLINE (Termii).
+* **Stages:** login + rate-override approval (email); Stage 11 decision (SMS).
+* **Test locally:** Resend free tier (own signup email only); Termii sends only to the configured test number.
+* **Live:** verified sending domain + SES; SMS opened beyond the test number explicitly.
+
+---
+
+# **25\. AI Features (Groq)**
+
+CrediScout AI drafts — never decides. Every AI output is labelled draft and an analyst must verify before it counts; every AI call is audit-logged.
+
+## **25.1 Document extraction (Stage 3)**
+
+* **Does:** reads an uploaded photo or text file and returns structured fields (e.g. bank-statement totals, dates, counts) for analyst review.
+* **Test locally and live:** Groq model with the key in `.env` / Netlify env; text files fully supported, photos need a vision-capable model on the account.
+
+## **25.2 Risk narrative (Stage 9)**
+
+* **Does:** writes a three-paragraph risk summary (capacity, risks, direction) strictly from the assessment's own numbers — no invented figures.
+* **Test locally and live:** same Groq key; output shown as an analyst-owned draft.
+
+## **25.3 Assessment Q&A (all stages)**
+
+* **Does:** answers analyst questions such as “Why was this loan declined?” using only that assessment's facts, with conversation history.
+* **Test locally and live:** same Groq key; off-topic questions are declined.
+
+---
+
+# **26\. Core Product Proposition**
 
 > **CrediScout helps credit analysts turn borrower information into structured financial and risk analysis, identify key credit risks, determine a supportable loan amount, apply the correct lending rate, produce an explicit, evidence-based lending recommendation with a full repayment schedule — and disburse approved loans to borrower bank accounts, confirming payment status via APIs/webhooks.**
 
